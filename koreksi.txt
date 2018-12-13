@@ -1,0 +1,7 @@
+Review Chat Arief :
+- Penambahan informasi untuk menunggu sebelum di approve admin di chatbox customer
+- Welcome message (greetings) di chatbox customer
+- Nama dihilangkan di dalam chatbox di masing-masing message
+- Notifikasi via modalbox diganti ke dalam chatbox
+- Peletakan message kiri dan kanan antara admin dan customer
+- Penambahan opsi kirim ke email ketika sesi chat ditutup (break) oleh admin untuk customer
