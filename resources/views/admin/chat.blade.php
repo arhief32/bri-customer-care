@@ -139,14 +139,10 @@ $(document).ready(function(){
 
     var conversation_id = ''
     $('#conversation').on('click', '.open-chat', function() {
-        var data_info = ''
-        var conversation_id = ''
-        var user_name = ''
         data_info = $(this).attr('data-info').split(',')
         conversation_id = data_info[0]
         user_name = data_info[1]
         
-
         $('.header-message').remove()
         
         $('#chat-textbox').attr('disabled', false)
@@ -193,6 +189,7 @@ $(document).ready(function(){
                             scrollTop: $('.chat-box').get(0).scrollHeight
                         }, 1)
                     }
+                    console.clear()
                 }
             })
         }
