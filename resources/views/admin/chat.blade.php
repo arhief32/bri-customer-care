@@ -55,16 +55,9 @@
 <!-- trading history area end -->
 </div>
 
-
-
 <script>
 $(document).ready(function(){
-    Pusher.logToConsole = true;
-    var pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
-        cluster: 'ap1',
-        forceTLS: true
-    })
-
+    
     function conversationTab(){
         var admin_id = '{{ session("session.id") }}'
         
@@ -140,53 +133,19 @@ $(document).ready(function(){
             },
             success: function(response){
                 $('.unapproved-'+user_id).attr('hidden', true)
-                console.log(response)
             }
         })
     })
 
-    function conversationSplit(response){
-        if(response.user.roles == 'user'){
-            $('.chat-box').append('<div class="msg header-message">'+
-                '<div class="bubble">'+
-                    '<div class="txt">'+
-                        '<span class="name">'+ response.user.name +'</span>'+
-                        '<span class="timestamp">'+ $.format.date(response.created_at, 'HH:mm') +'</span>'+      
-                        '<span class="message">'+
-                            response.message +
-                        '</span> '+
-                    '</div>'+
-                '<div class="bubble-arrow"></div>'+
-                '</div>'+
-            '</div>')
-            $('.chat-box').animate({
-                scrollTop: $('.chat-box').get(0).scrollHeight
-            }, 1)
-        }
-        else {
-            $('.chat-box').append('<div class="msg header-message">'+
-                '<div class="bubble alt">'+
-                    '<div class="txt">'+
-                        '<span class="name">'+ response.user.name +'</span>'+
-                        '<span class="timestamp">'+ $.format.date(response.created_at, 'HH:mm') +'</span>'+      
-                        '<span class="message">'+
-                        response.message + 
-                        '</span> '+
-                    '</div>'+
-                    '<div class="bubble-arrow"></div>'+
-                '</div>'+
-            '</div>')
-            $('.chat-box').animate({
-                scrollTop: $('.chat-box').get(0).scrollHeight
-            }, 1)
-        }
-    }
-
     var conversation_id = ''
     $('#conversation').on('click', '.open-chat', function() {
-        var data_info = $(this).attr('data-info').split(',')
-        var conversation_id = data_info[0]
-        var user_name = data_info[1]
+        var data_info = ''
+        var conversation_id = ''
+        var user_name = ''
+        data_info = $(this).attr('data-info').split(',')
+        conversation_id = data_info[0]
+        user_name = data_info[1]
+        
 
         $('.header-message').remove()
         
@@ -194,28 +153,53 @@ $(document).ready(function(){
         $('#chat-button').attr('disabled', false)
         $('#chat-button').data('info', conversation_id)
 
-        $.ajax({
-            type: 'GET',
-            url: '{{ url("admin/open-conversation") }}?conversation_id=' + conversation_id,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            async: false,
-            success: function(response){
-                $('.card-header').text('#'+response.conversation.id+' - '+ response.conversation.user.name)
+        $('.chat-box').empty()
+
+        function fetchMessage(){
+            var total_messages_now = $('.msg').length
+            $('.chat-box').empty()
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ url("admin/open-conversation") }}?conversation_id=' + conversation_id,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                async: false,
+                success: function(response){
+                    $('.card-header').text('#'+response.conversation.id+' - '+ response.conversation.user.name)
                 
-                conversation_id = response.conversation.id
-                var channel_message = pusher.subscribe('channel-message-'+ conversation_id)
-                channel_message.bind('event-message-'+ conversation_id, function(data) {
-                    conversationSplit(data)
-                })
-                
-                $.each(response.messages, function(){
-                    conversationSplit(this)
-                })
-            }
-        })
+                    if(response.messages){
+                        $.each(response.messages, function(){
+                            var roles = this.user.roles == 'admin' ? ' alt' : ''
+
+                            $('.chat-box').append('<div class="msg header-message">'+
+                                '<div class="bubble'+ roles +'">'+
+                                    '<div class="txt">'+
+                                        '<span class="name">'+ this.user.name +'</span>'+
+                                        '<span class="timestamp">'+ $.format.date(this.created_at, 'HH:mm') +'</span>'+      
+                                        '<span class="message">'+
+                                            this.message +
+                                        '</span> '+
+                                    '</div>'+
+                                '<div class="bubble-arrow"></div>'+
+                                '</div>'+
+                            '</div>')
+                        })
+                    }
+
+                    if(total_messages_now != response.messages.length){
+                        $('.chat-box').animate({
+                            scrollTop: $('.chat-box').get(0).scrollHeight
+                        }, 1)
+                    }
+                }
+            })
+        }
+        setInterval(fetchMessage, 1000)
     })
+
+
 
     $('#conversation').on('click', '.break-chat', function() {
         var id = $(this).attr('data-info')
@@ -228,6 +212,8 @@ $(document).ready(function(){
         
         $('#chat-textbox').attr('disabled', true)
         $('#chat-button').attr('disabled', true)
+
+        $('.chat-box').empty()
         
         $.ajax({
             type: 'GET',

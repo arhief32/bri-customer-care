@@ -174,13 +174,13 @@ class AdminController extends Controller
         ->first();
 
         // Send Approved Status User to Open Chat Box User
-        $client = new \GuzzleHttp\Client();
-        $post_approve = $client->post(url('api/post-approve'), [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => $conversation,
-        ]);
+        // $client = new \GuzzleHttp\Client();
+        // $post_approve = $client->post(url('api/post-approve'), [
+        //     'headers' => [
+        //         'Content-Type' => 'application/json'
+        //     ],
+        //     'body' => $conversation,
+        // ]);
 
         // Send Greeting Message
         $message = new Message;
@@ -216,13 +216,13 @@ class AdminController extends Controller
         $conversation->save();
 
         // Send message
-        $client = new \GuzzleHttp\Client();
-        $break_conversation = $client->post(url('api/break-conversation'), [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => $conversation,
-        ]);
+        // $client = new \GuzzleHttp\Client();
+        // $break_conversation = $client->post(url('api/break-conversation'), [
+        //     'headers' => [
+        //         'Content-Type' => 'application/json'
+        //     ],
+        //     'body' => $conversation,
+        // ]);
 
         return response()->json(['status' => 'success']);
     }
@@ -242,13 +242,13 @@ class AdminController extends Controller
         $message = Message::where('id', $message->id)->with('user')->first();
 
         // Send message
-        $client = new \GuzzleHttp\Client();
-        $send_message = $client->post(url('api/send-message'), [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => $message,
-        ]);
+        // $client = new \GuzzleHttp\Client();
+        // $send_message = $client->post(url('api/send-message'), [
+        //     'headers' => [
+        //         'Content-Type' => 'application/json'
+        //     ],
+        //     'body' => $message,
+        // ]);
         
         return response()->json($message);
     }

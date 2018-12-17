@@ -32,7 +32,7 @@
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous">
     </script>
-    <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+    <!-- <script src="https://js.pusher.com/4.3/pusher.min.js"></script> -->
 </head>
 
 <body>
