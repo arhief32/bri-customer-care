@@ -127,15 +127,6 @@ class UserController extends Controller
         $message->save();
 
         $message = Message::where('id', $message->id)->with('user')->first();
-
-        // Send message
-        // $client = new \GuzzleHttp\Client();
-        // $send_message = $client->post(url('api/send-message'), [
-        //     'headers' => [
-        //         'Content-Type' => 'application/json'
-        //     ],
-        //     'body' => $message,
-        // ]);
         
         return response()->json($message);
     }
